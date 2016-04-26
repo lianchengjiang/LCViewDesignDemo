@@ -8,6 +8,8 @@
 
 #import "DetailViewController.h"
 #import "DataBase.h"
+#import "SMFavoriteButton.h"
+
 
 @interface DetailViewController ()
 @property (nonatomic, strong) UIButton *favoriteButton;
@@ -21,11 +23,23 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+#ifndef SelfManager
+    self.favoriteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.view addSubview:self.favoriteButton];
+    [self.favoriteButton addTarget:self action:@selector(favoriteButtonAction) forControlEvents:UIControlEventTouchUpInside];
+
     if ([[DataBase shareInstance] isFavoriteWithId:self.news.newsId]) {
         [self.favoriteButton setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
     } else {
         [self.favoriteButton setImage:[UIImage imageNamed:@"unfavorite"] forState:UIControlStateNormal];
     }
+    
+#else 
+    SMFavoriteButton *button = [SMFavoriteButton new];
+    button.news = self.news;
+    [self.view addSubview:button];
+    
+#endif
 }
 
 - (void)didReceiveMemoryWarning {
@@ -33,13 +47,15 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - getter
-- (UIButton *)favoriteButton
+- (void)favoriteButtonAction
 {
-    if (!_favoriteButton) {
-        _favoriteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (([[DataBase shareInstance] isFavoriteWithId:self.news.newsId])) {
+        [[DataBase shareInstance] deleteNewsWithId:self.news.newsId];
+        [self.favoriteButton setImage:[UIImage imageNamed:@"unfavorite"] forState:UIControlStateNormal];
+    } else {
+        [[DataBase shareInstance] insertNews:self.news];
+        [self.favoriteButton setImage:[UIImage imageNamed:@"favorite"] forState:UIControlStateNormal];
     }
-    return _favoriteButton;
 }
 
 @end

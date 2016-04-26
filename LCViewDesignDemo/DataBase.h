@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "News.h"
+#import "NewsModel.h"
+
 
 @interface DataBase : NSObject
 + (instancetype)shareInstance;
 
 - (BOOL)isFavoriteWithId:(NSString *)newsId;
-- (BOOL)insertNews:(News *)news;
+- (BOOL)insertNews:(NewsModel *)news;
 - (BOOL)deleteNewsWithId:(NSString *)newsId;
 
 @end
